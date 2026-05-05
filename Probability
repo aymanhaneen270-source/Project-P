@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace project1
+{
+	internal class Program
+	{
+		static void Main(string[] args)
+		{
+			double[] data = { 115, 182, 191, 31, 196, 1099, 5, 172, 10, 179, 83, 21, 20, 21, 186, 177,
+			195, 193, 188, 199, 62, 109, 105, 183, 110 };
+			int n = data.Length;
+			Array.Sort(data);
+			double sum = 0;
+			foreach (double x in data)
+			sum += x;
+			double mean = sum / n;
+
+			double mode = data[0];
+			int max = 0;
+			for (int i = 0; i < n; i++)
+			{
+				int count = 0;
+				for (int j = 0; j < n; j++)
+				{
+					if (data[j] == data[i]) count++;
+				}
+				if (count > max)
+				{ max = count; mode = data[i]; }
+			}
+			double p20 = calcP(data, 20);
+			double p50 =calcP(data, 50); 
+			double q1 = calcP(data, 25);
+			double q3 = calcP(data, 75);
+
+			double sumS = 0;
+			foreach (double x in data) sumS += Math.Pow(x - mean, 2);
+			double variance = sumS / n;
+
+			double range = data[n - 1] - data[0];
+			double iqr = q3 - q1;
+			double stdDev = Math.Sqrt(variance);
+			double sumDev = 0;
+			foreach (double x in data) sumDev += (x - mean);
+
+			Console.WriteLine(" Mean: " + mean);
+			Console.WriteLine(" Mode: " + mode);
+			Console.WriteLine(" Median: " + p50);
+			Console.WriteLine(" Variance: " + variance.ToString("F2"));
+			Console.WriteLine(" P20: " + p20);
+			Console.WriteLine(" P50: " + p50);
+			Console.WriteLine(" Third Quartile: " + q3);
+			Console.WriteLine(" Second Quartile: " + p50);
+			Console.WriteLine(" Range: " + range);
+			Console.WriteLine(" Interquartile Range: " + iqr);
+			Console.WriteLine(" Standard Deviation: " + stdDev.ToString("F2"));
+			Console.WriteLine(" Summation of Deviations: " + sumDev.ToString("F2"));
+
+			double lower = q1 - 1.5 * iqr;
+			double upper = q3 + 1.5 * iqr;
+			foreach (double x in data)
+			{
+				if (x < lower || x > upper) Console.WriteLine($"{x} is an outlier.");
+			}
+		}
+		static double calcP(double[] d, double p)
+		{
+			double pos = (p / 100) * (d.Length - 1);
+			int idx = (int)pos;
+			double frac = pos - idx;
+			if (idx + 1 < d.Length) return d[idx] + frac * (d[idx + 1] - d[idx]);
+			return d[idx];
+		}
+	}
+}
+	
